@@ -1,0 +1,31 @@
+.U--table {
+    display: table;
+    table-layout: auto;
+    width: 100%;
+    &.-fixed {
+        table-layout: fixed;
+    }
+    &.-full-height {
+        height: 100%;
+    }
+    .table__row {
+        display: table-row;
+    }
+    .table__cell {
+        display: table-cell;
+        vertical-align: top;
+        &.-auto-width {
+            width: 1%;
+            white-space: nowrap;
+        }
+        &.-vertical-align--middle {
+            vertical-align: middle;
+        }
+        &.-vertical-align--bottom {
+            vertical-align: bottom;
+        }
+        &.-has-divider {
+            border-left: 1px solid $border--color;
+        }
+    }
+}

@@ -1,0 +1,102 @@
+/**
+ * Set base font size, because I using rem.
+ */
+ html {
+    font-size: 10px;
+}
+
+/**
+ * Reset body content.
+ * @font-family using Google Font.
+ */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Merriweather', serif;
+    font-size: 1.6rem;
+    font-weight: normal;
+    color: $text--color;
+    line-height: 1.725;
+    background: #fff;
+}
+
+/**
+ * Define permalink color.
+ */
+a {
+    color: $primary--color;
+    &:link,
+    &:hover {
+        color: $primary--color;
+    }
+}
+
+/**
+ * Overriding container width.
+ */
+.container {
+    padding: 0;
+    max-width: 960px;
+    @media (max-width: 960px + 32) {
+        padding: 0 16px;
+    }
+}
+
+/**
+ * Module container.
+ */
+.module--container {
+    display: block;
+    position: relative;
+    padding: 48px 0;
+    @media (min-width: $screen--small) {
+        padding: 64px 0;
+    }
+    @media (min-width: $screen--medium) {
+        padding: 80px 0;
+    }
+    @media (min-width: $screen--large) {
+        padding: 100px 0;
+    }
+
+    /* give top border */
+    &.-has-divider {
+        @include border('top');
+    }
+
+    /* background color: gray */
+    &.-background-gray {
+        background: #f2f2f2;
+    }
+}
+
+/* material icons */
+.material-icons {
+    display: block;
+}
+
+/* input placeholder */
+input {
+    &::-webkit-input-placeholder {
+        color: #c9c9c9;
+    }
+    &::-moz-placeholder {
+        color: #c9c9c9;
+    }
+    &:-ms-input-placeholder {
+        color: #c9c9c9;
+    }
+    &:-moz-placeholder {
+        color: #c9c9c9;
+    }
+}
+
+/* button */
+button {
+    margin: 0;
+    padding: 0;
+    font-family: 'Merriweather', serif;
+    background: none;
+    border: 0;
+    outline: 0;
+}

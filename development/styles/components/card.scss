@@ -1,0 +1,26 @@
+.card {
+    display: block;
+    position: relative;
+    background: #fff;
+    @include box-shadow(1px, 1px, 6px, rgba(0,0,0,.2));
+
+    /* has padding */
+    &.-has-padding {
+        padding: 24px;
+    }
+
+    /* rounded */
+    &.-rounded {
+        @include border-radius(6px);
+    }
+
+    /* has border */
+    &.-has-border {
+        @include border;
+    }
+
+    /* remove shadow */
+    &.-remove-shadow {
+        box-shadow: none;
+    }
+}

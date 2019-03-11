@@ -1,0 +1,11 @@
+@import "_core/_autoload.scss";
+@import "components/button.scss";
+@import "components/card.scss";
+@import "components/navigation.scss";
+@import "components/text-editor.scss";
+
+.P--app {
+    display: block;
+    position: relative;
+    padding: 32px 0;
+}

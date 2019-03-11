@@ -1,0 +1,30 @@
+/**
+ * Define container width.
+ */
+$container--width: 960px;
+
+/**
+ * Define global configuration variable.
+ */
+ $primary--color: rgb(33, 150, 243);
+ $primary--color--active: rgb(23, 140, 235);
+
+/**
+ * Define text color.
+ */
+$text--color: #333;
+$text--color--secondary: #919191;
+
+/**
+ * Define border color.
+ */
+$border--color: rgba(0,0,0,.05);
+$border--color--focus: rgba(0,0,0,.08);
+ 
+/**
+ * Screen resolution.
+ */
+ $screen--extra-small: 480px;
+ $screen--small: 768px;
+ $screen--medium: 1024px;
+ $screen--large: 1200px;

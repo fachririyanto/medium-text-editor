@@ -1,0 +1,27 @@
+/**
+ * Setup border.
+ */
+ @mixin border($position: "all") {
+    @if $position == "top" {
+        border-top: 1px solid $border--color;
+    } @else if $position == "right" {
+        border-right: 1px solid $border--color;
+    } @else if $position == "bottom" {
+        border-bottom: 1px solid $border--color;
+    } @else if $position == "left" {
+        border-left: 1px solid $border--color;
+    } @else {
+        border: 1px solid $border--color;
+    }
+}
+
+/**
+ * Apply line clamp.
+ */
+@mixin line-clamp($line: 1) {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line;
+}
