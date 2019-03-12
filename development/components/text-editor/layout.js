@@ -326,7 +326,7 @@ export default class TextEditor extends Component {
     render() {
         return (
             <div className="C--text-editor type--1" id={ this.props.id } ref={ node => this.texteditor = node }>
-                { /*isPlaceholderState(this.props.value) ? <TextPlaceholder label="Title" /> : null*/ }
+                { isPlaceholderState(this.props.value) ? <TextPlaceholder label="Title" /> : null }
                 <Toolbar
                     forwardedRef={ node => this.toolbar.ref = node }
                     editor={ this.editor }

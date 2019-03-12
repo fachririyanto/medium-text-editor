@@ -6,6 +6,9 @@
 
 .P--app {
     display: block;
-    position: relative;
-    padding: 32px 0;
+    .app__text-editor {
+        display: block;
+        position: relative;
+        padding: 32px 0;
+    }
 }

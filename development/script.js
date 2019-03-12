@@ -2,11 +2,14 @@ import React, { Component } from 'react'
 import { render } from 'react-dom'
 import { Value } from 'slate'
 
+/* import validation */
+import { isMobile } from './helpers/validation'
+
 /* import components */
-import Dropdown from './dropdown'
-import { NavContainer } from './components/navigation/layout'
+import Navigation from './components/navigation/layout'
 import Button from './components/button/layout'
 import Editor from './components/text-editor/layout'
+import MobileEditor from './components/text-editor-mobile/layout'
 
 /* import styles */
 import './styles/style.scss'
@@ -152,40 +155,32 @@ class App extends Component {
     render() {
         return (
             <section className="P--app" id="page--app">
-                <NavContainer>
-                    <div className="U--table -full-height">
-                        <div className="table__cell -vertical-align--middle">
-                            <h1 className="site--name">
-                                <a href="/">T</a>
-                            </h1>
-                        </div>
-                        <div className="table__cell -vertical-align--middle -auto-width">
-                            <ul className="navigation__menu">
-                                <li className="menu__item" ref={ node => this.buttonMore = node }>
-                                    <button className="button--more" onClick={ this.toggleOption.bind(this) }>
-                                        <i className="material-icons">more_horiz</i>
-                                    </button>
-                                    <Dropdown
-                                        value={ this.state.value }
-                                        isOpen={ this.state.isOpenOption }
-                                        layout={ this.state.optionLayout }
-                                        post={ this.state.post }
-                                        changePost={ this.changePost.bind(this) }
-                                        changeLayout={ this.changeLayout.bind(this) }
-                                    />
-                                </li>
-                                <li className="menu__item">
-                                    <Button className="button--publish -rounded -theme-primary -size-small" onClick={ event => this.savePost(event) }>Publish</Button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </NavContainer>
-                <Editor
+                <Navigation
+                    forwardedRef={ node => this.buttonMore = node }
                     value={ this.state.value }
-                    onChange={ this.onChange }
-                    placeholder="Title"
+                    isOpen={ this.state.isOpenOption }
+                    layout={ this.state.optionLayout }
+                    post={ this.state.post }
+                    changePost={ this.changePost.bind(this) }
+                    changeLayout={ this.changeLayout.bind(this) }
+                    toggleOption={ this.toggleOption.bind(this) }
+                    savePost={ this.savePost.bind(this) }
                 />
+                { isMobile() ? (
+                    <MobileEditor
+                        value={ this.state.value }
+                        onChange={ this.onChange }
+                        placeholder="Title"
+                    />
+                ) : (
+                    <div className="app__text-editor">
+                        <Editor
+                            value={ this.state.value }
+                            onChange={ this.onChange }
+                            placeholder="Title"
+                        />
+                    </div>
+                )}
             </section>
         )
     }

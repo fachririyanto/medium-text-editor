@@ -1,3 +1,5 @@
+@import "../../../styles/_core/_import.scss";
+
 .C--text-editor.type--1 {
     display: block;
     position: relative;
@@ -5,6 +7,7 @@
         display: block;
         position: relative;
         margin: 0 0 32px;
+        white-space: normal;
     }
     .block--container {
         display: block;
@@ -627,33 +630,6 @@
                 color: $text--color--secondary;
                 line-height: 1.4;
                 @include line-clamp(1);
-            }
-        }
-    }
-
-    /* is mobile */
-    &.mobile--version {
-        padding-top: 64px;
-        .text-editor--toolbar-mobile {
-            position: fixed;
-            top: 80px;
-            bottom: 0;
-            background: #fff;
-            @include border('bottom');
-            .mobile__button {
-                .material-icons {
-                    color: $text--color;
-                }
-                &.-is-active {
-                    .material-icons {
-                        color: $primary--color;
-                    }
-                }
-                &.-is-disabled {
-                    .material-icons {
-                        color: $text--color--secondary;
-                    }
-                }
             }
         }
     }
