@@ -32,7 +32,7 @@ export default class EmbedLink extends Component {
         const { data } = node
         const url      = data.get('url')
 
-        fetch('http://localhost/sandbox/API-utils/?action=GET_WEBSITE_DATA&url=' + url)
+        fetch('http://localhost/github/medium-text-editor/API-utils/?action=GET_WEBSITE_DATA&url=' + url)
         .then(response => { return response.json() })
         .then(json => {
             this.setState({
