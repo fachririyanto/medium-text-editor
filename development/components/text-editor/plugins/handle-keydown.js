@@ -11,15 +11,31 @@ const isBoldHotkey = isKeyHotkey('mod+b')
 const isItalicHotkey = isKeyHotkey('mod+i')
 const isUndoHotkey = isKeyHotkey('mod+z')
 
+/**
+ * Define type of char.
+ */
+const getType = (char) => {
+    switch (char) {
+        case '*':
+        case '-':
+        case '+':
+            return 'list-item'
+        case '>':
+            return 'block-quote'
+        default:
+            return null
+    }
+}
+
 export default {
     /**
-     * Add toggle mark.
+     * On Keydown.
      */
     onKeyDown(event, editor, next) {
+        const { value } = editor
 
         // with special key
         if (event.key === 'Enter' && event.shiftKey) {
-            const { value } = editor
             if (value.anchorBlock.type === 'paragraph') {
                 editor.insertInline({
                     type: 'break',
@@ -35,9 +51,6 @@ export default {
         // without special key
         switch (event.key) {
             case 'Enter': {
-                // get value
-                const { value } = editor
-
                 // validate block
                 if (!value.anchorBlock) return next()
 
@@ -45,6 +58,17 @@ export default {
                 if (value.anchorBlock.type === 'image') {
                     editor.focus()
                     return next()
+                }
+
+                // if bulleted list
+                if (value.anchorBlock.type === 'list-item') {
+                    if (value.anchorBlock.text === '') {
+                        event.preventDefault()
+                        editor
+                            .unwrapBlock('bulleted-list')
+                            .setBlocks('paragraph')
+                        return true
+                    }
                 }
 
                 // custom block list
@@ -110,10 +134,8 @@ export default {
                 editor.insertBlock('paragraph')
                 return true
             }
-            case 'Backspace': {
-                // get value
-                const { value } = editor
 
+            case 'Backspace': {
                 // validate block
                 if (!value.anchorBlock) return next()
 
@@ -136,10 +158,8 @@ export default {
                     default: return next()
                 }
             }
-            case 'Delete': {
-                // get value
-                const { value } = editor
 
+            case 'Delete': {
                 // validate block
                 if (!value.anchorBlock) return next()
 
@@ -163,7 +183,43 @@ export default {
                         return next()
                 }
             }
+
+            case ' ': {
+                // validate block
+                if (!value.anchorBlock) return next()
+
+                // validate if is title block
+                if (value.anchorBlock.type === 'title') return next()
+
+                // get selection
+                const { selection } = value
+                if (selection.isExpanded) return next()
+
+                // define markdown
+                const { startBlock } = value
+                const { start } = selection
+                const chars = startBlock.text.slice(0, start.offset).replace(/\s*/g, '')
+                const type = getType(chars)
+                if (!type) return next()
+                if (type === 'list-item' && startBlock.type === 'list-item') return next()
+
+                event.preventDefault()
+                editor.setBlocks(type)
+
+                if (type === 'list-item') {
+                    editor.wrapBlock('bulleted-list')
+                }
+                editor.moveFocusToStartOfNode(startBlock).delete()
+                return next()
+            }
+
             default:
+                // validate block
+                if (!value.anchorBlock) return next()
+
+                // validate if is title block
+                if (value.anchorBlock.type === 'title') return next()
+
                 if (isBoldHotkey(event)) {
                     editor.toggleMark('bold')
                 } else if (isItalicHotkey(event)) {

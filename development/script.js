@@ -7,7 +7,6 @@ import { isMobile } from './helpers/validation'
 
 /* import components */
 import Navigation from './components/navigation/layout'
-import Button from './components/button/layout'
 import Editor from './components/text-editor/layout'
 import MobileEditor from './components/text-editor-mobile/layout'
 

@@ -6,10 +6,10 @@ import { KeyUtils } from 'slate'
 /**
  * Import plugins.
  */
-import MarkHotkey from './plugins/mark-key'
+import HandleKeydown from './plugins/handle-keydown'
 
 /* List of plugins */
-const plugins = [MarkHotkey]
+const plugins = [HandleKeydown]
 
 /**
  * Import schema.
@@ -43,6 +43,7 @@ import Image from './components/image/layout'
 import Caption from './components/image/caption'
 import EmbedPost from './components/embed-post/layout'
 import EmbedLink from './components/embed-link/layout'
+import BulletedList from './components/bulleted-list/layout'
 
 /**
  * Reset key for Server Side Rendering purpose.
@@ -107,7 +108,7 @@ export default class TextEditor extends Component {
      * Optimize rendering.
      */
     shouldComponentUpdate(nextProps, nextState) {
-        if (!nextProps.value.anchorBlock) return false
+        if (!nextProps.value.anchorBlock && this.toolbar.name === 'add-inline') return false
         return true
     }
 
@@ -279,7 +280,6 @@ export default class TextEditor extends Component {
                     toolbar={ this.toolbar }
                     setToolbar={ this.setToolbar.bind(this) }
                     setToolbarRange= { this.setToolbarRange.bind(this) }
-                    isMobile={ this.state.isMobile }
                 />
                 <div className="text-editor__content">
                     <Editor
@@ -340,7 +340,7 @@ export default class TextEditor extends Component {
                 const { data } = node
                 const url = data.get('url')
                 return (
-                    <a { ... attributes } href={ url }>
+                    <a { ...attributes } href={ url }>
                         { children }
                     </a>
                 )
@@ -351,6 +351,14 @@ export default class TextEditor extends Component {
             case 'embed-post':
                 return (
                     <EmbedPost { ...props } />
+                )
+            case 'bulleted-list':
+                return (
+                    <BulletedList { ...props } />
+                )
+            case 'list-item':
+                return (
+                    <li { ...attributes }>{ children }</li>
                 )
             case 'break':
                 return <br />

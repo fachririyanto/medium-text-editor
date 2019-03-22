@@ -13,7 +13,7 @@ const Navigation = (props) => (
                 <div className="U--table -full-height">
                     <div className="table__cell -vertical-align--middle">
                         <h1 className="site--name">
-                            <a href="/">T</a>
+                            <a href="/">M</a>
                         </h1>
                     </div>
                     <div className="table__cell -vertical-align--middle -auto-width">

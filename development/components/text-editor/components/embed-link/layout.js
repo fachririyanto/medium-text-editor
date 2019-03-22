@@ -98,9 +98,7 @@ export default class EmbedLink extends Component {
      * @return {Element}
      */
     render() {
-        const { node, attributes, isFocused } = this.props
-        const { data } = node
-        const url      = data.get('url')
+        const { attributes, isFocused } = this.props
         return (
             <div className={ "block--default block--embed-link" + (isFocused ? ' -is-selected' : '') }>
                 <div className="block--container" { ...attributes }>
