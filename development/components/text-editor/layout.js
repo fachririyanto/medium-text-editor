@@ -31,11 +31,6 @@ import { initToolbar } from './core/editor'
 import { isPlaceholderState } from './core/validation'
 
 /**
- * Import is mobile detector.
- */
-import { isMobile } from '../../helpers/validation'
-
-/**
  * Import components.
  */
 import Toolbar from './components/toolbar/layout'
@@ -78,11 +73,6 @@ export default class TextEditor extends Component {
          * Initial state.
          */
         this.state = {
-            isMobile: false,
-            screen: {
-                width: 0,
-                height: 0
-            },
             toolbar: TOOLBAR_DEFAULT_STATE
         }
 
@@ -108,17 +98,9 @@ export default class TextEditor extends Component {
     componentDidMount() {
         this.editor.focus()
         document.addEventListener('mousedown', this.handleClickOutside.bind(this))
-        //window.addEventListener('resize', this.handleResize.bind(this))
-
-        if (isMobile()) {
-            this.setState({
-                isMobile: isMobile()
-            })
-        }
     }
     componentWillUnmount() {
         document.removeEventListener('mousedown', this.handleClickOutside.bind(this))
-        //window.removeEventListener('resize', this.handleResize.bind(this))
     }
 
     /**
@@ -155,47 +137,10 @@ export default class TextEditor extends Component {
     }
 
     /**
-     * Handle resize.
-     */
-    handleResize(event) {
-        let timer
-
-        timer = setTimeout(() => {
-            const isMobile = window.innerWidth <= 720 ? true : false
-            this.setState({
-                isMobile: isMobile,
-                screen: {
-                    width: window.innerWidth,
-                    height: window.innerHeight
-                }
-            }, () => {
-                clearTimeout(timer)
-
-                const { value } = this.props
-                this.initToolbar(value)
-            })
-        }, 300)
-    }
-
-    /**
      * Init toolbar.
      */
     initToolbar(value) {
         if (value.anchorBlock) {
-            // if mobile condition
-            if (this.state.isMobile) {
-                this.toolbar = {
-                    ref: this.toolbar.ref,
-                    range: this.toolbar.range,
-                    name: 'mobile-version',
-                    blockKey: value.anchorBlock.key,
-                    blockType: value.anchorBlock.type,
-                    state: {}
-                }
-                this.props.onChange({ value }, () => {})
-                return
-            }
-
             // title conditional state
             if (value.anchorBlock.type === 'title') {
                 this.toolbar = {

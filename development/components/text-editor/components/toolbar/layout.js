@@ -3,7 +3,6 @@ import Block from './block'
 import Inline from './inline'
 import Image from './image'
 import Video from './video'
-import Mobile from './mobile'
 
 /**
  * Toolbar component.
@@ -13,9 +12,8 @@ const Toolbar = (props) => {
     const { toolbar } = props
 
     // define default layout
-    let layout   = null
-    let isMobile = props.isMobile
-    let zIndex   = 10
+    let layout = null
+    let zIndex = 10
 
     // define toolbar
     switch (toolbar.name) {
@@ -42,23 +40,12 @@ const Toolbar = (props) => {
             zIndex = 100
             break
 
-        case 'mobile-version':
-            // get layout
-            layout   = <Mobile { ...props } />
-            isMobile = true
-            zIndex   = 100
-            break
-
         default:
             // default value
             layout = null
     }
 
-    return isMobile ? (
-        <div className="text-editor--toolbar-mobile" ref={ props.forwardedRef } style={{ zIndex: zIndex }}>
-            { layout }
-        </div>
-    ) : (
+    return (
         <div className="text-editor--toolbar" ref={ props.forwardedRef } style={{ zIndex: zIndex }}>
             { layout }
         </div>
