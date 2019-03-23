@@ -12,16 +12,16 @@ const isItalicHotkey = isKeyHotkey('mod+i')
 const isUndoHotkey = isKeyHotkey('mod+z')
 
 /**
- * Define type of char.
+ * Define block type by char.
  */
 const getType = (char) => {
+    if (/[0-9].$/.test(char)) return 'list-item'
     switch (char) {
-        case '*':
         case '-':
         case '+':
             return 'list-item'
         case '>':
-            return 'block-quote'
+            return 'blockquote'
         default:
             return null
     }
@@ -66,6 +66,7 @@ export default {
                         event.preventDefault()
                         editor
                             .unwrapBlock('bulleted-list')
+                            .unwrapBlock('numbered-list')
                             .setBlocks('paragraph')
                         return true
                     }
@@ -84,7 +85,7 @@ export default {
                 // if text is not empty
                 if (text !== '') {
                     // if text is Youtube video URL
-                    if (isYoutubeVideo(text)) {
+                    if (isYoutubeVideo(text) && value.anchorBlock.type === 'paragraph') {
                         // get Youtube ID from the text
                         const youtubeID = getYoutubeID(text)
 
@@ -106,7 +107,7 @@ export default {
                             }
                         })
                         return true
-                    } else if (isUrl(text)) {
+                    } else if (isUrl(text) && value.anchorBlock.type === 'paragraph') {
                         editor.setBlocks({
                             type: 'embed-link',
                             data: {
@@ -141,19 +142,48 @@ export default {
 
                 // define block type
                 switch (value.anchorBlock.type) {
-                    case 'caption':
+                    case 'caption': {
                         if (value.selection.start.offset === 0 && value.selection.end.offset === 0) {
                             event.preventDefault()
                             return false
                         }
                         break
-                    case 'image':
+                    }
+                    case 'image': {
                         // get caption block
                         const nextBlock = value.nextBlock
 
                         // remove caption if you remove image
                         editor.removeNodeByKey(nextBlock.key).focus()
                         return next()
+                    }
+                    case 'list-item': {
+                        // get prev block
+                        const prevBlock = value.previousBlock
+                        const nextBlock = value.nextBlock
+
+                        // validate if last char
+                        if (value.anchorBlock.text === '') {
+                            if (!nextBlock || (nextBlock && nextBlock.type !== 'list-item') && !prevBlock || (prevBlock && prevBlock.type !== 'list-item')) {
+                                editor
+                                    .unwrapBlock('bulleted-list')
+                                    .unwrapBlock('numbered-list')
+                                    .removeNodeByKey(value.anchorBlock.key)
+                                    .focus()
+                                return true
+                            }
+                        } else {
+                            if (!value.selection.isExpanded && value.selection.start.offset === 0) {
+                                editor
+                                    .unwrapBlock('bulleted-list')
+                                    .unwrapBlock('numbered-list')
+                                    .setBlocks('paragraph')
+                                    .focus()
+                                return true
+                            }
+                        }
+                        return next()
+                    }
 
                     default: return next()
                 }
@@ -189,7 +219,7 @@ export default {
                 if (!value.anchorBlock) return next()
 
                 // validate if is title block
-                if (value.anchorBlock.type === 'title') return next()
+                if (value.anchorBlock.type !== 'paragraph') return next()
 
                 // get selection
                 const { selection } = value
@@ -207,7 +237,11 @@ export default {
                 editor.setBlocks(type)
 
                 if (type === 'list-item') {
-                    editor.wrapBlock('bulleted-list')
+                    if (/[0-9].$/.test(chars)) {
+                        editor.wrapBlock('numbered-list')
+                    } else {
+                        editor.wrapBlock('bulleted-list')
+                    }
                 }
                 editor.moveFocusToStartOfNode(startBlock).delete()
                 return next()

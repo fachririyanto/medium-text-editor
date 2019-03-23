@@ -21,7 +21,7 @@ export const isBlockToolbar = (value) => {
  * @return {Bool}
  */
 export const isInlineToolbar = (value) => {
-    const allow = ['paragraph', 'blockquote', 'h2', 'h3', 'embed-link', 'caption']
+    const allow = ['paragraph', 'blockquote', 'h2', 'h3', 'embed-link', 'caption', 'list-item']
     return value.fragment.text !== '' && allow.indexOf(value.anchorBlock.type) > -1 ? true : false
 }
 

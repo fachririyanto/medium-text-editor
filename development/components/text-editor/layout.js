@@ -44,6 +44,9 @@ import Caption from './components/image/caption'
 import EmbedPost from './components/embed-post/layout'
 import EmbedLink from './components/embed-link/layout'
 import BulletedList from './components/bulleted-list/layout'
+import NumberedList from './components/numbered-list/layout'
+import ListItem from './components/list-item/layout'
+import { List } from 'immutable';
 
 /**
  * Reset key for Server Side Rendering purpose.
@@ -356,9 +359,13 @@ export default class TextEditor extends Component {
                 return (
                     <BulletedList { ...props } />
                 )
+            case 'numbered-list':
+                return (
+                    <NumberedList { ...props } />
+                )
             case 'list-item':
                 return (
-                    <li { ...attributes }>{ children }</li>
+                    <ListItem { ...props } />
                 )
             case 'break':
                 return <br />

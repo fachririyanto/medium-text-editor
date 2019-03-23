@@ -206,6 +206,18 @@
                             border: 0;
                             outline: 0;
                             background: #333;
+                            &::-webkit-input-placeholder {
+                                color: #777;
+                            }
+                            &::-moz-placeholder {
+                                color: #777;
+                            }
+                            :-ms-input-placeholder {
+                                color: #777;
+                            }
+                            :-moz-placeholder {
+                                color: #777;
+                            }
                         }
                         .link__close {
                             display: block;
@@ -226,6 +238,13 @@
                             }
                         }
                     }
+                }
+            }
+            &.-is-input-open {
+                margin-left: -53.5px;
+                min-width: 213px;
+                .inline__content {
+                    min-width: 213px;
                 }
             }
         }
@@ -293,6 +312,16 @@
         font-weight: normal;
         font-size: 1.725rem;
         line-height: 1.825;
+    }
+
+    /*block: list */
+    .block--list {
+        font-weight: normal;
+        font-size: 1.725rem;
+        line-height: 1.825;
+        .list__item {
+            margin: 8px 0;
+        }
     }
 
     /* block: blockquote */

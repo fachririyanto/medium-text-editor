@@ -286,13 +286,14 @@ export default class Inline extends Component {
      * Render for caption.
      */
     Caption() {
+        const isInputOpen = this.props.toolbar.state.showInputLink
         return (
-            <div className="toolbar--inline" onClick={ this.handleClick.bind(this) }>
+            <div className={ "toolbar--inline" + (isInputOpen ? ' -is-input-open' : '') } onClick={ this.handleClick.bind(this) }>
                 <div className="inline__content">
                     { this.ButtonInline('bold', 'format_bold') }
                     { this.ButtonInline('italic', 'format_italic') }
                     { this.ButtonLink() }
-                    { this.props.toolbar.state.showInputLink ? this.InputLink() : null }
+                    { isInputOpen ? this.InputLink() : null }
                 </div>
             </div>
         )
@@ -311,6 +312,7 @@ export default class Inline extends Component {
 
         // define block
         switch (value.anchorBlock.type) {
+            case 'list-item':
             case 'caption':
                 return this.Caption()
             default:

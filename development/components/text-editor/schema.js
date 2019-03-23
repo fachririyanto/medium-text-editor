@@ -13,6 +13,7 @@ export default {
                 { type: 'image' },
                 { type: 'caption' },
                 { type: 'bulleted-list' },
+                { type: 'numbered-list' },
                 { type: 'list-item' }
             ],
             min: 0
