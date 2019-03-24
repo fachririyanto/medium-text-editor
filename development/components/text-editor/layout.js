@@ -39,6 +39,7 @@ import Heading from './components/heading/layout'
 import Paragraph from './components/paragraph/layout'
 import Separator from './components/separator/layout'
 import Blockquote from './components/blockquote/layout'
+import Blockcode from './components/blockcode/layout'
 import Image from './components/image/layout'
 import Caption from './components/image/caption'
 import EmbedPost from './components/embed-post/layout'
@@ -46,7 +47,6 @@ import EmbedLink from './components/embed-link/layout'
 import BulletedList from './components/bulleted-list/layout'
 import NumberedList from './components/numbered-list/layout'
 import ListItem from './components/list-item/layout'
-import { List } from 'immutable';
 
 /**
  * Reset key for Server Side Rendering purpose.
@@ -145,6 +145,21 @@ export default class TextEditor extends Component {
      */
     initToolbar(value) {
         if (value.anchorBlock) {
+            // if block code
+            if (value.anchorBlock.type === 'blockcode') {
+                this.toolbar = {
+                    ref: this.toolbar.ref,
+                    range: ELEMENT_DEFAULT_RANGE,
+                    name: '',
+                    blockKey: '',
+                    blockType: '',
+                    state: {}
+                }
+                this.props.onChange({ value }, () => {
+                    initToolbar(this, value)
+                })
+            }
+
             // title conditional state
             if (value.anchorBlock.type === 'title') {
                 this.toolbar = {
@@ -326,6 +341,10 @@ export default class TextEditor extends Component {
             case 'blockquote':
                 return (
                     <Blockquote { ...props } />
+                )
+            case 'blockcode':
+                return (
+                    <Blockcode { ...props } />
                 )
             case 'image':
                 return (

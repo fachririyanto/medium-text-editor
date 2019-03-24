@@ -335,6 +335,17 @@
         }
     }
 
+    /* block: blockcode */
+    .block--blockcode {
+        .blockcode__content {
+            display: block;
+            padding: 24px;
+            font-size: 1.55rem;
+            font-family: 'Courier New', Courier, monospace;
+            background: #f2f2f2;
+        }
+    }
+
     /* block: image */
     .block--image {
         margin-bottom: 16px;

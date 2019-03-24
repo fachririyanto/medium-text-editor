@@ -2,6 +2,7 @@ import { isKeyHotkey } from 'is-hotkey'
 import isUrl from 'is-url'
 import { isYoutubeVideo } from '../../../helpers/validation'
 import { getYoutubeID } from '../../../helpers/utils'
+import { getEventTransfer } from 'slate-react'
 
 /**
  * Define hotkey matchers.
@@ -22,6 +23,8 @@ const getType = (char) => {
             return 'list-item'
         case '>':
             return 'blockquote'
+        case '```':
+            return 'blockcode'
         default:
             return null
     }
@@ -76,6 +79,13 @@ export default {
                 const voidblock = ['separator', 'embed-post']
                 if (voidblock.indexOf(value.anchorBlock.type) > -1) {
                     editor.splitBlock().delete().insertBlock('paragraph')
+                    return true
+                }
+
+                // if block code
+                if (value.anchorBlock.type === 'blockcode') {
+                    event.preventDefault()
+                    editor.insertText('\n')
                     return true
                 }
 
@@ -263,6 +273,21 @@ export default {
                 } else {
                     return next()
                 }
+        }
+    },
+
+    onPaste(event, editor, next) {
+        const { value } = editor
+        if (!value.anchorBlock) return next()
+
+        switch (value.anchorBlock.type) {
+            case 'blockcode': {
+                event.preventDefault()
+                const transfer = getEventTransfer(event)
+                editor.insertText(transfer.html)
+                break
+            }
+            default: return next()
         }
     }
 }
