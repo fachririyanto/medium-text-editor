@@ -95,7 +95,7 @@ export default {
                     type = 'h3'
                     break
                 }
-                case 52: {
+                case 53: {
                     type = 'blockquote'
                     break
                 }
