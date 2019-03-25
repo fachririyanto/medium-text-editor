@@ -7,9 +7,10 @@ import { KeyUtils } from 'slate'
  * Import plugins.
  */
 import HandleKeydown from './plugins/handle-keydown'
+import HandleCopyPaste from './plugins/handle-copypaste'
 
 /* List of plugins */
-const plugins = [HandleKeydown]
+const plugins = [HandleKeydown, HandleCopyPaste]
 
 /**
  * Import schema.
@@ -158,6 +159,7 @@ export default class TextEditor extends Component {
                 this.props.onChange({ value }, () => {
                     initToolbar(this, value)
                 })
+                return
             }
 
             // title conditional state
@@ -386,6 +388,8 @@ export default class TextEditor extends Component {
                 return (
                     <ListItem { ...props } />
                 )
+            case 'code':
+                return <code { ...attributes }>{ children }</code>
             case 'break':
                 return <br />
             case 'paragraph':
@@ -409,6 +413,8 @@ export default class TextEditor extends Component {
                 return <strong { ...attributes }>{ children }</strong>
             case 'italic':
                 return <em { ...attributes }>{ children }</em>
+            case 'code':
+                return <code { ...attributes }>{ children }</code>
             default:
                 return next()
         }

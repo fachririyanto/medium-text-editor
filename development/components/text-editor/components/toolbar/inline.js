@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { hasTitle, hasInline, hasBlock, hasMark } from '../../core/validation'
 
 /**
  * Button inline component.
@@ -34,56 +35,11 @@ const ButtonBlock = (props) => (
 export default class Inline extends Component {
 
     /**
-     * Validate if content already has title block.
-     */
-    hasTitle() {
-        const { editor } = this.props
-        const { value }  = editor
-        let hasTitle = 0
-        value.document.nodes.map((node) => {
-            if (node.type === 'title') hasTitle += 1
-        })
-        return hasTitle
-    }
-
-    /**
-     * Validate if has mark.
-     */
-    hasMark(type) {
-        const { editor } = this.props
-        const { value }  = editor
-        return value.activeMarks.some(mark => mark.type == type)
-    }
-
-    /**
-     * Validate if has block.
-     */
-    hasBlock(type) {
-        const { editor } = this.props
-        const { value }  = editor
-        if (type === 'title') {
-            if (this.hasTitle()) {
-                type = 'h2'
-            }
-        }
-        return value.blocks.some(node => node.type == type)
-    }
-
-    /**
-     * Validate if has inline.
-     */
-    hasInline(type) {
-        const { editor } = this.props
-        const { value }  = editor
-        return value.inlines.some(inline => inline.type === type)
-    }
-
-    /**
      * When user click outside button.
      */
     handleClick(event) {
         event.preventDefault()
-        const { editor } = this.props
+        const { editor }  = this.props
         const { toolbar } = this.props
 
         if (toolbar.state.showInputLink) {
@@ -110,13 +66,14 @@ export default class Inline extends Component {
     onClickBlock(event, type) {
         event.preventDefault()
         const { editor } = this.props
+        const { value }  = editor
 
         if (type === 'title') {
-            if (this.hasTitle()) {
+            if (hasTitle(value)) {
                 type = 'h2'
             }
         }
-        const isActive = this.hasBlock(type)
+        const isActive = hasBlock(value, type)
         editor.setBlocks(isActive ? 'paragraph' : type)
     }
 
@@ -125,7 +82,9 @@ export default class Inline extends Component {
      */
     onClickLink(event) {
         event.preventDefault()
-        const isActive = this.hasInline('link')
+        const { editor } = this.props
+        const { value }  = editor
+        const isActive   = hasInline(value, 'link')
 
         if (isActive) {
             const { editor } = this.props
@@ -185,7 +144,9 @@ export default class Inline extends Component {
      * @return {Element}
      */
     ButtonInline(type, icon) {
-        const isActive = this.hasMark(type)
+        const { editor } = this.props
+        const { value }  = editor
+        const isActive   = hasMark(value, type)
         return (
             <ButtonInline
                 isActive={ isActive }
@@ -200,7 +161,9 @@ export default class Inline extends Component {
      * @return {Element}
      */
     ButtonLink() {
-        const isActive = this.hasInline('link')
+        const { editor } = this.props
+        const { value }  = editor
+        const isActive   = hasInline(value, 'link')
         return (
             <ButtonLink
                 isActive={ isActive }
@@ -214,7 +177,9 @@ export default class Inline extends Component {
      * @return {Element}
      */
     ButtonBlock(type, icon) {
-        const isActive = this.hasBlock(type)
+        const { editor } = this.props
+        const { value }  = editor
+        const isActive   = hasBlock(value, type)
         return (
             <ButtonBlock
                 isActive={ isActive }

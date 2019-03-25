@@ -2,7 +2,7 @@ import { isKeyHotkey } from 'is-hotkey'
 import isUrl from 'is-url'
 import { isYoutubeVideo } from '../../../helpers/validation'
 import { getYoutubeID } from '../../../helpers/utils'
-import { getEventTransfer } from 'slate-react'
+import { hasTitle, hasMark, hasBlock } from '../core/validation'
 
 /**
  * Define hotkey matchers.
@@ -11,20 +11,20 @@ import { getEventTransfer } from 'slate-react'
 const isBoldHotkey = isKeyHotkey('mod+b')
 const isItalicHotkey = isKeyHotkey('mod+i')
 const isUndoHotkey = isKeyHotkey('mod+z')
+const isBreakLineKey = isKeyHotkey('Shift+Enter')
+const isSeparatorKey = isKeyHotkey('mod+Enter')
+const isModAltKey = isKeyHotkey('mod+alt')
 
 /**
  * Define block type by char.
  */
 const getType = (char) => {
-    if (/[0-9].$/.test(char)) return 'list-item'
     switch (char) {
-        case '-':
-        case '+':
+        case '*':
+        case '1.':
             return 'list-item'
         case '>':
             return 'blockquote'
-        case '```':
-            return 'blockcode'
         default:
             return null
     }
@@ -37,113 +37,170 @@ export default {
     onKeyDown(event, editor, next) {
         const { value } = editor
 
-        // with special key
-        if (event.key === 'Enter' && event.shiftKey) {
+        /**
+         * Create new line but not create new paragraph.
+         */
+        if (isBreakLineKey(event)) {
+            if (!value.anchorBlock) return next()
             if (value.anchorBlock.type === 'paragraph') {
                 editor.insertInline({
                     type: 'break',
                     data: {}
-                })
-                .moveToStartOfNextText()
-                .focus()
-
+                }).moveToStartOfNextText().focus()
                 return true
             }
+            return next()
         }
 
-        // without special key
+        /**
+         * Insert separator.
+         */
+        if (isSeparatorKey(event)) {
+            event.preventDefault()
+
+            if (!value.anchorBlock) return next()
+            if (value.anchorBlock.type === 'paragraph') {
+                if (value.anchorBlock.text === '') {
+                    editor.setBlocks('separator')
+                } else {
+                    editor.insertBlock('separator')
+                }
+            } else {
+                editor.insertBlock('separator')
+            }
+            editor.insertBlock('paragraph')
+            editor.focus()
+            return true
+        }
+
+        /**
+         * Add blockquote.
+         */
+        if (isModAltKey(event)) {
+            event.preventDefault()
+
+            if (!value.anchorBlock) return next()
+            if (value.anchorBlock.type === 'title') return next()
+
+            let type
+            switch (event.keyCode) {
+                case 49: {
+                    type = 'title'
+                    if (hasTitle(value)) {
+                        type = 'h2'
+                    }
+                    break
+                }
+                case 50: {
+                    type = 'h3'
+                    break
+                }
+                case 52: {
+                    type = 'blockquote'
+                    break
+                }
+                default: return next()
+            }
+            const isActive = hasBlock(value, type)
+            editor.setBlocks(isActive ? 'paragraph' : type)
+            return true
+        }
+
+        /**
+         * Define key.
+         */
         switch (event.key) {
             case 'Enter': {
                 // validate block
                 if (!value.anchorBlock) return next()
 
-                // if image block, next to caption
-                if (value.anchorBlock.type === 'image') {
-                    editor.focus()
-                    return next()
-                }
-
-                // if bulleted list
-                if (value.anchorBlock.type === 'list-item') {
-                    if (value.anchorBlock.text === '') {
-                        event.preventDefault()
-                        editor
-                            .unwrapBlock('bulleted-list')
-                            .unwrapBlock('numbered-list')
-                            .setBlocks('paragraph')
+                /**
+                 * Define action by block type.
+                 */
+                switch (value.anchorBlock.type) {
+                    case 'image': {
+                        editor.focus()
+                        return next()
+                    }
+                    case 'list-item': {
+                        if (value.anchorBlock.text === '') {
+                            event.preventDefault()
+                            editor
+                                .unwrapBlock('bulleted-list')
+                                .unwrapBlock('numbered-list')
+                                .setBlocks('paragraph')
+                            return true
+                        }
+                        return next()
+                    }
+                    case 'separator':
+                    case 'embed-post': {
+                        editor.splitBlock().delete().insertBlock('paragraph')
                         return true
                     }
-                }
-
-                // custom block list
-                const voidblock = ['separator', 'embed-post']
-                if (voidblock.indexOf(value.anchorBlock.type) > -1) {
-                    editor.splitBlock().delete().insertBlock('paragraph')
-                    return true
-                }
-
-                // if block code
-                if (value.anchorBlock.type === 'blockcode') {
-                    event.preventDefault()
-                    editor.insertText('\n')
-                    return true
-                }
-
-                // get text on current block
-                const text = value.anchorBlock.text
-
-                // if text is not empty
-                if (text !== '') {
-                    // if text is Youtube video URL
-                    if (isYoutubeVideo(text) && value.anchorBlock.type === 'paragraph') {
-                        // get Youtube ID from the text
-                        const youtubeID = getYoutubeID(text)
-
-                        // define block
-                        const block = value.anchorBlock
-
-                        // define video align
-                        const align = block.data.get('align')
-
-                        // change current block into video block
-                        editor.setBlocks({
-                            type: 'embed-post',
-                            data: {
-                                type: 'video',
-                                provider: 'youtube',
-                                videoID: youtubeID,
-                                align: align === undefined ? 'default' : align,
-                                url: text
-                            }
-                        })
+                    case 'blockcode': {
+                        event.preventDefault()
+                        editor.insertText('\n')
                         return true
-                    } else if (isUrl(text) && value.anchorBlock.type === 'paragraph') {
-                        editor.setBlocks({
-                            type: 'embed-link',
-                            data: {
-                                url: text
-                            }
-                        }).insertBlock('paragraph')
-                        return true
-                    } else {
-                        // split block
-                        editor.splitBlock()
+                    }
+                    default: {
+                        // get text on current block
+                        const text = value.anchorBlock.text
 
-                        let blocklist = ['title', 'h2', 'h3', 'blockquote', 'caption']
-                        if (blocklist.indexOf(value.anchorBlock.type) > -1) {
-                            if (value.selection.start.offset === 0) {
-                                editor.setNodeByKey(value.anchorBlock.key, { type: 'paragraph' })
+                        // if text is not empty
+                        if (text !== '') {
+                            // if text is Youtube video URL
+                            if (isYoutubeVideo(text) && value.anchorBlock.type === 'paragraph') {
+                                // get Youtube ID from the text
+                                const youtubeID = getYoutubeID(text)
+
+                                // define block
+                                const block = value.anchorBlock
+
+                                // define video align
+                                const align = block.data.get('align')
+
+                                // change current block into video block
+                                editor.setBlocks({
+                                    type: 'embed-post',
+                                    data: {
+                                        type: 'video',
+                                        provider: 'youtube',
+                                        videoID: youtubeID,
+                                        align: align === undefined ? 'default' : align,
+                                        url: text
+                                    }
+                                })
+                                return true
+                            } else if (isUrl(text) && value.anchorBlock.type === 'paragraph') {
+                                editor.setBlocks({
+                                    type: 'embed-link',
+                                    data: {
+                                        url: text
+                                    }
+                                }).insertBlock('paragraph')
+                                return true
                             } else {
-                                editor.setBlocks('paragraph')
+                                // split block
+                                editor.splitBlock()
+
+                                let blocklist = ['title', 'h2', 'h3', 'blockquote', 'caption']
+                                if (blocklist.indexOf(value.anchorBlock.type) > -1) {
+                                    if (value.selection.start.offset === 0) {
+                                        editor.setNodeByKey(value.anchorBlock.key, { type: 'paragraph' })
+                                    } else {
+                                        editor.setBlocks('paragraph')
+                                    }
+                                }
+                                return true
                             }
                         }
+
+                        // insert new paragraph
+                        editor.insertBlock('paragraph')
                         return true
                     }
                 }
-
-                // insert new paragraph
-                editor.insertBlock('paragraph')
-                return true
             }
 
             case 'Backspace': {
@@ -194,7 +251,6 @@ export default {
                         }
                         return next()
                     }
-
                     default: return next()
                 }
             }
@@ -205,22 +261,49 @@ export default {
 
                 // define block type
                 switch (value.anchorBlock.type) {
-                    case 'caption':
+                    case 'caption': {
                         if (value.selection.start.offset === 0 && value.selection.end.offset === 0) {
                             event.preventDefault()
                             return false
                         }
                         break
-                    case 'image':
+                    }
+                    case 'image': {
                         // get caption block
                         const nextBlock = value.nextBlock
 
                         // remove caption if you remove image
                         editor.removeNodeByKey(nextBlock.key).focus()
                         return next()
+                    }
+                    case 'list-item': {
+                        // get prev block
+                        const prevBlock = value.previousBlock
+                        const nextBlock = value.nextBlock
 
-                    default:
+                        // validate if last char
+                        if (value.anchorBlock.text === '') {
+                            if (!nextBlock || (nextBlock && nextBlock.type !== 'list-item') && !prevBlock || (prevBlock && prevBlock.type !== 'list-item')) {
+                                editor
+                                    .unwrapBlock('bulleted-list')
+                                    .unwrapBlock('numbered-list')
+                                    .removeNodeByKey(value.anchorBlock.key)
+                                    .focus()
+                                return true
+                            }
+                        } else {
+                            if (!value.selection.isExpanded && value.selection.start.offset === 0) {
+                                editor
+                                    .unwrapBlock('bulleted-list')
+                                    .unwrapBlock('numbered-list')
+                                    .setBlocks('paragraph')
+                                    .focus()
+                                return true
+                            }
+                        }
                         return next()
+                    }
+                    default: return next()
                 }
             }
 
@@ -247,7 +330,7 @@ export default {
                 editor.setBlocks(type)
 
                 if (type === 'list-item') {
-                    if (/[0-9].$/.test(chars)) {
+                    if (chars === '1.') {
                         editor.wrapBlock('numbered-list')
                     } else {
                         editor.wrapBlock('bulleted-list')
@@ -257,37 +340,109 @@ export default {
                 return next()
             }
 
-            default:
+            case 'ArrowRight':
+            case 'ArrowDown': {
                 // validate block
                 if (!value.anchorBlock) return next()
 
-                // validate if is title block
-                if (value.anchorBlock.type === 'title') return next()
-
-                if (isBoldHotkey(event)) {
-                    editor.toggleMark('bold')
-                } else if (isItalicHotkey(event)) {
-                    editor.toggleMark('italic')
-                } else if (isUndoHotkey(event)) {
-                    editor.undo().focus()
-                } else {
-                    return next()
+                // validate if on code mark
+                if (hasMark(value, 'code')) {
+                    const { selection } = value
+                    if (!selection.isExpanded && value.anchorBlock.text.length === selection.start.offset) {
+                        editor.removeMark('code').insertText(' ')
+                        return next()
+                    }
                 }
-        }
-    },
-
-    onPaste(event, editor, next) {
-        const { value } = editor
-        if (!value.anchorBlock) return next()
-
-        switch (value.anchorBlock.type) {
-            case 'blockcode': {
-                event.preventDefault()
-                const transfer = getEventTransfer(event)
-                editor.insertText(transfer.html)
-                break
+                return next()
             }
-            default: return next()
+
+            case '`': {
+                // validate block
+                if (!value.anchorBlock) return next()
+
+                /**
+                 * Define action by block type.
+                 */
+                switch (value.anchorBlock.type) {
+                    case 'paragraph': {
+                        const { selection } = value
+                        if (selection.isExpanded) {
+                            event.preventDefault()
+                            editor.toggleMark('code')
+                            return true
+                        }
+
+                        /**
+                         * Define markdown.
+                         */
+                        const { startBlock } = value
+                        const { start } = selection
+                        const char = startBlock.text.slice(0, start.offset).replace(/\s*/g, '')
+
+                        switch (char) {
+                            case '``': {
+                                if (event.key === '`') {
+                                    event.preventDefault()
+                                    editor.moveFocusToStartOfNode(startBlock).delete().setBlocks('blockcode')
+                                    return true
+                                }
+                                return next()
+                            }
+                            default:
+                        }
+                    }
+                    default: return next()
+                }
+            }
+
+            default: {
+                // validate block
+                if (!value.anchorBlock) return next()
+
+                // validate undo
+                if (isUndoHotkey(event)) {
+                    editor.undo().focus()
+                    return true
+                }
+
+                /**
+                 * Define action by block type.
+                 */
+                switch (value.anchorBlock.type) {
+                    case 'title':
+                    case 'blockcode': {
+                        return next()
+                    }
+                    case 'paragraph': {
+                        /**
+                         * Define markdown.
+                         */
+                        const { startBlock, selection } = value
+                        const { start } = selection
+                        const char = startBlock.text.slice(start.offset - 1, start.offset).replace(/\s*/g, '')
+
+                        switch (char) {
+                            case '`': {
+                                const notallowedkeys = /`|Shift|Alt|Control|Meta/
+                                if (!notallowedkeys.test(event.key)) {
+                                    editor.moveFocusBackward(1).delete().addMark('code')
+                                    return true
+                                }
+                            }
+                            default:
+                        }
+                        
+                        if (isBoldHotkey(event)) {
+                            editor.toggleMark('bold')
+                        } else if (isItalicHotkey(event)) {
+                            editor.toggleMark('italic')
+                        } else {
+                            return next()
+                        }
+                    }
+                    default: return next()
+                }
+            }
         }
     }
 }

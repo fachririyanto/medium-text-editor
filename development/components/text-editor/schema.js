@@ -45,6 +45,9 @@ export default {
         }]
     },
     inlines: {
+        code: {
+            isVoid: false
+        },
         break: {
             isVoid: true
         }
