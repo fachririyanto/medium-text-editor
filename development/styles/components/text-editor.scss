@@ -12,6 +12,18 @@
             @include border-radius(2px);
         }
     }
+    .block--custom {
+        em {
+            font-style: normal;
+        }
+        code {
+            margin: 0;
+            padding: 0;
+            font-family: $font--primary;
+            background: none;
+            @include border-radius(0);
+        }
+    }
     .block--container {
         display: block;
         position: relative;
@@ -186,6 +198,11 @@
                             color: $primary--color;
                         }
                     }
+                    &.-is-disabled {
+                        .material-icons {
+                            color: #777;
+                        }
+                    }
                 }
                 .inline__divider {
                     display: inline-block;
@@ -303,6 +320,14 @@
     /* block: heading */
     .block--heading {
         margin-bottom: 16px;
+        font-weight: bold;
+        code {
+            margin: 0;
+            padding: 0;
+            font-family: $font--primary;
+            background: none;
+            @include border-radius(0);
+        }
         &.type--h2 {
             font-size: 2.4rem;
             line-height: 1.45;
@@ -338,6 +363,9 @@
         .blockquote__content {
             display: block;
             padding: 0 40px;
+            strong {
+                font-weight: normal;
+            }
         }
     }
 

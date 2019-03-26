@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const H2 = (props) => (
-    <h2 className="block--default block--heading type--h2">
+    <h2 className="block--default block--custom block--heading type--h2">
         <span className="block--container" { ...props.attributes }>
             <span className="block__transform">
                 { props.children }
@@ -11,7 +11,7 @@ export const H2 = (props) => (
 )
 
 export const H3 = (props) => (
-    <h2 className="block--default block--heading type--h3">
+    <h2 className="block--default block--custom block--heading type--h3">
         <span className="block--container" { ...props.attributes }>
             <span className="block__transform">
                 { props.children }

@@ -23,8 +23,6 @@ const getType = (char) => {
         case '*':
         case '1.':
             return 'list-item'
-        case '>':
-            return 'blockquote'
         default:
             return null
     }
@@ -79,9 +77,14 @@ export default {
         if (isModAltKey(event)) {
             event.preventDefault()
 
+            // validate block
             if (!value.anchorBlock) return next()
-            if (value.anchorBlock.type === 'title') return next()
 
+            // validate allowed block
+            const allowed = ['paragraph', 'blockquote', 'h2', 'h3']
+            if (allowed.indexOf(value.anchorBlock.type) === -1) return next()
+
+            // define type
             let type
             switch (event.keyCode) {
                 case 49: {

@@ -5,7 +5,7 @@ import { hasTitle, hasInline, hasBlock, hasMark } from '../../core/validation'
  * Button inline component.
  */
 const ButtonInline = (props) => (
-    <button className={ "inline__button" + (props.isActive ? ' -is-active' : '') } onClick={ props.onClick }>
+    <button className={ "inline__button" + (props.isActive ? ' -is-active' : '') + (props.isDisabled ? ' -is-disabled' : '') } onClick={ props.onClick }>
         <i className="material-icons">{ props.icon }</i>
     </button>
 )
@@ -14,7 +14,7 @@ const ButtonInline = (props) => (
  * Button link component.
  */
 const ButtonLink = (props) => (
-    <button className={ "inline__button" + (props.isActive ? ' -is-active' : '') } onClick={ props.onClick }>
+    <button className={ "inline__button" + (props.isActive ? ' -is-active' : '') + (props.isDisabled ? ' -is-disabled' : '') } onClick={ props.onClick }>
         <i className="material-icons">insert_link</i>
     </button>
 )
@@ -147,11 +147,17 @@ export default class Inline extends Component {
         const { editor } = this.props
         const { value }  = editor
         const isActive   = hasMark(value, type)
+
+        // define if disabled
+        const blocks = ['h2', 'h3', 'blockquote']
+        const isDisabled = blocks.indexOf(value.anchorBlock.type) > -1 ? true : false
+
         return (
             <ButtonInline
                 isActive={ isActive }
+                isDisabled={ isDisabled }
                 icon={ icon }
-                onClick={ event => this.onClickInline(event, type) }
+                onClick={ event => isDisabled ? event.preventDefault() : this.onClickInline(event, type) }
             />
         )
     }
@@ -164,10 +170,16 @@ export default class Inline extends Component {
         const { editor } = this.props
         const { value }  = editor
         const isActive   = hasInline(value, 'link')
+
+        // define if disabled
+        const blocks = ['h2', 'h3', 'blockquote']
+        const isDisabled = blocks.indexOf(value.anchorBlock.type) > -1 ? true : false
+
         return (
             <ButtonLink
                 isActive={ isActive }
-                onClick={ event => this.onClickLink(event) }
+                isDisabled={ isDisabled }
+                onClick={ event => isDisabled ? event.preventDefault() : this.onClickLink(event) }
             />
         )
     }

@@ -23,7 +23,9 @@ const BLOCK_TAGS = {
  */
 const MARK_TAGS = {
     strong: 'bold',
+    b: 'bold',
     em: 'italic',
+    i: 'italic',
     code: 'code'
 }
 
@@ -41,7 +43,7 @@ const RULES = [
                     nodes: next(el.childNodes)
                 }
             }
-        },
+        }
     },
     {
         deserialize(el, next) {
@@ -53,10 +55,10 @@ const RULES = [
                     nodes: next(el.childNodes)
                 }
             }
-        },
+        }
     },
     {
-        // Special case for code blocks, which need to grab the nested childNodes.
+        // special case for code blocks, which need to grab the nested childNodes.
         deserialize(el, next) {
             if (el.tagName.toLowerCase() === 'pre') {
                 const code = el.childNodes[0]
@@ -74,7 +76,7 @@ const RULES = [
         }
     },
     {
-        // Special case for images, to grab their src.
+        // special case for images, to grab their src.
         deserialize(el, next) {
             if (el.tagName.toLowerCase() === 'img') {
                 return {
@@ -86,10 +88,10 @@ const RULES = [
                     }
                 }
             }
-        },
+        }
     },
     {
-        // Special case for links, to grab their href.
+        // special case for links, to grab their href.
         deserialize(el, next) {
             if (el.tagName.toLowerCase() === 'a') {
                 return {
@@ -101,7 +103,7 @@ const RULES = [
                     }
                 }
             }
-        },
+        }
     }
 ]
 
@@ -119,13 +121,18 @@ export default {
         if (!value.anchorBlock) return next()
 
         switch (value.anchorBlock.type) {
-            case 'blockcode': {
+            case 'paragraph': {
+                const transfer = getEventTransfer(event)
+                if (transfer.type !== 'html') return next()
+                const { document } = serializer.deserialize(transfer.html)
+                editor.insertFragment(document)
+                return true
+            }
+            default: {
                 event.preventDefault()
                 const transfer = getEventTransfer(event)
                 editor.insertText(transfer.text)
-                break
             }
-            default: return next()
         }
     }
 }

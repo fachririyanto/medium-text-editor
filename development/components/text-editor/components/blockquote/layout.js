@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Blockquote = (props) => (
-    <blockquote className="block--default block--blockquote">
+    <blockquote className="block--default block--custom block--blockquote">
         <span className="block--container" { ...props.attributes }>
             <span className="block__transform">
                 <span className="blockquote__content">
