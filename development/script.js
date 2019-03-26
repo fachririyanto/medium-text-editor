@@ -26,9 +26,7 @@ const initialValue = Value.fromJSON({
                     {
                         object: 'text',
                         leaves: [
-                            {
-                                text: ''
-                            }
+                            { text: '' }
                         ]
                     }
                 ]

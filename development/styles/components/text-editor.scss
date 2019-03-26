@@ -515,6 +515,21 @@
         }
     }
 
+    /* block: image wrapper */
+    .block--image-wrapper {
+        display: block;
+        margin-bottom: 32px;
+        .block--caption.-is-empty {
+            display: none;
+        }
+        &.-is-focused {
+            margin-bottom: 0;
+            .block--caption.-is-empty {
+                display: block;
+            }
+        }
+    }
+
     /* block: separator */
     .block--separator {
         display: block;

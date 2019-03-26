@@ -190,9 +190,9 @@ export default {
                                 let blocklist = ['title', 'h2', 'h3', 'blockquote', 'caption']
                                 if (blocklist.indexOf(value.anchorBlock.type) > -1) {
                                     if (value.selection.start.offset === 0) {
-                                        editor.setNodeByKey(value.anchorBlock.key, { type: 'paragraph' })
+                                        editor.setNodeByKey(value.anchorBlock.key, { type: 'paragraph' }).unwrapBlock('image-wrapper')
                                     } else {
-                                        editor.setBlocks('paragraph')
+                                        editor.setBlocks('paragraph').unwrapBlock('image-wrapper')
                                     }
                                 }
                                 return true
@@ -200,7 +200,7 @@ export default {
                         }
 
                         // insert new paragraph
-                        editor.insertBlock('paragraph')
+                        editor.insertBlock('paragraph').unwrapBlock('image-wrapper')
                         return true
                     }
                 }

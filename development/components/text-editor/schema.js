@@ -35,6 +35,7 @@ export default {
                 { type: 'blockcode' },
                 { type: 'embed-post' },
                 { type: 'embed-link' },
+                { type: 'image-wrapper' },
                 { type: 'image' },
                 { type: 'caption' },
                 { type: 'bulleted-list' },

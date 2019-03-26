@@ -60,6 +60,7 @@ export default class Block extends Component {
                         align: 'default'
                     }
                 })
+                .wrapBlock('image-wrapper')
                 .insertBlock('caption')
 
                 // set editor focus

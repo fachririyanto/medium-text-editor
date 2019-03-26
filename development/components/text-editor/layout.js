@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import { Editor } from 'slate-react'
 import { KeyUtils } from 'slate'
+import { isKeyHotkey } from 'is-hotkey'
 
 /**
  * Import plugins.
@@ -34,6 +35,7 @@ import { isPlaceholderState } from './core/validation'
 /**
  * Import components.
  */
+import Container from './components/container/layout'
 import Toolbar from './components/toolbar/layout'
 import Title from './components/title/layout'
 import Heading from './components/heading/layout'
@@ -41,7 +43,7 @@ import Paragraph from './components/paragraph/layout'
 import Separator from './components/separator/layout'
 import Blockquote from './components/blockquote/layout'
 import Blockcode from './components/blockcode/layout'
-import Image from './components/image/layout'
+import Image, { ImageWrapper } from './components/image/layout'
 import Caption from './components/image/caption'
 import EmbedPost from './components/embed-post/layout'
 import EmbedLink from './components/embed-link/layout'
@@ -53,6 +55,12 @@ import ListItem from './components/list-item/layout'
  * Reset key for Server Side Rendering purpose.
  */
 KeyUtils.resetGenerator()
+
+/**
+ * Define hotkey matchers.
+ * @type {Function}
+ */
+const isKeyHotLink = isKeyHotkey('mod+k')
 
 /**
  * Placeholder component.
@@ -120,7 +128,6 @@ export default class TextEditor extends Component {
      * Handle click outside editor.
      */
     handleClickOutside(event) {
-        if (this.state.isMobile) return
         if (this.texteditor && !this.texteditor.contains(event.target)) {
             const toolbar = ['add-inline', 'edit-image', 'edit-embed-post']
             if (toolbar.indexOf(this.toolbar.name) > -1) {
@@ -286,6 +293,37 @@ export default class TextEditor extends Component {
     }
 
     /**
+     * Handle on keydown.
+     */
+    onKeyDown(event, editor, next) {
+        if (isKeyHotLink(event)) {
+            const { value } = editor
+            const { selection } = value
+
+            // validate block
+            if (!value.anchorBlock) return next()
+
+            // validate block type
+            const allowed = ['paragraph', 'caption', 'list-item']
+            if (allowed.indexOf(value.anchorBlock.type) === -1) return next()
+
+            // if toolbar is open
+            if (selection.isExpanded && this.toolbar.name === 'add-inline') {
+                if (this.toolbar.state.showInputLink) return next()
+                let currentState = this.toolbar
+                currentState.state.showInputLink = true
+                this.setToolbar(currentState, () => {
+                    setTimeout(() => {
+                        document.getElementById('inline__textbox').focus()
+                    }, 0)
+                })
+                return true
+            }
+        }
+        return next()
+    }
+
+    /**
      * Render element.
      * @return {Element}
      */
@@ -307,6 +345,7 @@ export default class TextEditor extends Component {
                         autoFocus={ true }
                         value={ this.props.value }
                         onChange={ this.onChange.bind(this) }
+                        onKeyDown={ this.onKeyDown.bind(this) }
                         renderNode={ this.renderNode.bind(this) }
                         renderMark={ this.renderMark.bind(this) }
                         schema={ schema }
@@ -328,6 +367,9 @@ export default class TextEditor extends Component {
 
         // define node
         switch (node.type) {
+            case 'container': {
+                return <Container { ...props } />
+            }
             case 'title':
                 return (
                     <Title placeholder={ this.props.placeholder } { ...props } />
@@ -347,6 +389,10 @@ export default class TextEditor extends Component {
             case 'blockcode':
                 return (
                     <Blockcode { ...props } />
+                )
+            case 'image-wrapper':
+                return (
+                    <ImageWrapper { ...props } />
                 )
             case 'image':
                 return (

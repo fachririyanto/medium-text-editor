@@ -1,5 +1,16 @@
 import React from 'react'
 
+/**
+ * Image wrapper.
+ */
+export function ImageWrapper(props) {
+    return (
+        <div className={ "block--image-wrapper" + (props.isFocused ? ' -is-focused' : '') } { ...props.attributes }>
+            { props.children }
+        </div>
+    )
+}
+
 const Image = (props) => {
     const { node, attributes, isFocused } = props
     const data = {

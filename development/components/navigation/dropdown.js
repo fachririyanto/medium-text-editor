@@ -75,8 +75,9 @@ export default class Dropdown extends Component {
         // get list of images
         let images = []
         for (let i = 0;i < blocks.length;i++) {
-            if (blocks[i].type === 'image') {
-                images.push(blocks[i].data.get('url'))
+            if (blocks[i].type === 'image-wrapper') {
+                const subblocks = blocks[i].nodes.toArray()
+                images.push(subblocks[0].data.get('url'))
             }
         }
 

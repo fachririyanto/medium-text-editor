@@ -15,7 +15,7 @@ const Caption = (props) => {
         align = 'default'
     }
     return (
-        <p className="block--default block--caption">
+        <p className={ "block--default block--caption" + (props.node.text === '' ? ' -is-empty' : '') }>
             <span className={ "block--container" + (' -' + align) }  { ...attributes }>
                 <span className="block__transform">
                     <span className="caption__text">
