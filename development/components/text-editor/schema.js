@@ -11,7 +11,6 @@ export default {
             { type: 'embed-post' },
             { type: 'embed-link' },
             { type: 'image' },
-            { type: 'caption' },
             { type: 'bulleted-list' },
             { type: 'numbered-list' },
             { type: 'list-item' }
