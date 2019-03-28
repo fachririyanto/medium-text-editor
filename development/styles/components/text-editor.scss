@@ -11,6 +11,10 @@
             background: #f5f5f5;
             @include border-radius(2px);
         }
+        a {
+            color: $text--color;
+            text-decoration: underline;
+        }
     }
     .block--custom {
         em {
@@ -650,6 +654,7 @@
             }
         }
         .link__focused {
+            z-index: 0;
             cursor: pointer;
         }
         .link__card {

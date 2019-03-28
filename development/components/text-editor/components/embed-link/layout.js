@@ -32,7 +32,7 @@ export default class EmbedLink extends Component {
         const { data } = node
         const url      = data.get('url')
 
-        fetch('http://localhost/github/medium-text-editor/API-utils/?action=GET_WEBSITE_DATA&url=' + url)
+        fetch('http://localhost/fachririyanto/github/medium-text-editor/API-utils/?action=GET_WEBSITE_DATA&url=' + url)
         .then(response => { return response.json() })
         .then(json => {
             this.setState({
@@ -104,8 +104,8 @@ export default class EmbedLink extends Component {
                 <div className="block--container" { ...attributes }>
                     <span className="block__transform">
                         { this.state.isLoading ? this.Loader() : this.Link() }
+                        <span className="link__focused U--overlay-layout"></span>
                     </span>
-                    <span className="link__focused U--overlay-layout"></span>
                 </div>
             </div>
         )

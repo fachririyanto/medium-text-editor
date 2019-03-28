@@ -35,7 +35,6 @@ import { isPlaceholderState } from './core/validation'
 /**
  * Import components.
  */
-import Container from './components/container/layout'
 import Toolbar from './components/toolbar/layout'
 import Title from './components/title/layout'
 import Heading from './components/heading/layout'
@@ -367,9 +366,6 @@ export default class TextEditor extends Component {
 
         // define node
         switch (node.type) {
-            case 'container': {
-                return <Container { ...props } />
-            }
             case 'title':
                 return (
                     <Title placeholder={ this.props.placeholder } { ...props } />
@@ -434,8 +430,6 @@ export default class TextEditor extends Component {
                 return (
                     <ListItem { ...props } />
                 )
-            case 'code':
-                return <code { ...attributes }>{ children }</code>
             case 'break':
                 return <br />
             case 'paragraph':

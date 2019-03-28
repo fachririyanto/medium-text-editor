@@ -125,6 +125,11 @@ export default {
                         editor.focus()
                         return next()
                     }
+                    case 'embed-link': {
+                        event.preventDefault()
+                        editor.splitBlock().delete().insertBlock('paragraph')
+                        return true
+                    }
                     case 'list-item': {
                         if (value.anchorBlock.text === '') {
                             event.preventDefault()
@@ -163,6 +168,10 @@ export default {
                                 // define video align
                                 const align = block.data.get('align')
 
+                                // remove link
+                                editor.moveToRangeOfNode(block).unwrapInline('link')
+                                editor.moveFocusTo(block.key, 0)
+
                                 // change current block into video block
                                 editor.setBlocks({
                                     type: 'embed-post',
@@ -176,6 +185,14 @@ export default {
                                 })
                                 return true
                             } else if (isUrl(text) && value.anchorBlock.type === 'paragraph') {
+                                // define block
+                                const block = value.anchorBlock
+
+                                // remove link
+                                editor.moveToRangeOfNode(block).unwrapInline('link')
+                                editor.moveStartTo(block.key, text.length)
+
+                                // convert to link
                                 editor.setBlocks({
                                     type: 'embed-link',
                                     data: {
@@ -224,7 +241,7 @@ export default {
                         const nextBlock = value.nextBlock
 
                         // remove caption if you remove image
-                        editor.removeNodeByKey(nextBlock.key).focus()
+                        editor.removeNodeByKey(nextBlock.key).unwrapBlock('image-wrapper').focus()
                         return next()
                     }
                     case 'list-item': {
@@ -276,7 +293,7 @@ export default {
                         const nextBlock = value.nextBlock
 
                         // remove caption if you remove image
-                        editor.removeNodeByKey(nextBlock.key).focus()
+                        editor.removeNodeByKey(nextBlock.key).unwrapBlock('image-wrapper').focus()
                         return next()
                     }
                     case 'list-item': {

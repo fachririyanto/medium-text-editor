@@ -23,12 +23,34 @@ class MetaData {
 
         // get HTML from URL
         $html = $this->grabHTMLfromUrl($url);
+        if (!$html) {
+            return array(
+                'url'         => $url,
+                'domain'      => parse_url($url),
+                'title'       => 'Website not found.',
+                'description' => 'Error page 404 website not found.',
+                'image'       => ''
+            );
+            exit;
+        }
+
+        // validate if is image url
+        if (getimagesize($url)) {
+            return array(
+                'url'         => $url,
+                'domain'      => parse_url($url),
+                'title'       => 'Image Source.',
+                'description' => 'This is an image source.',
+                'image'       => $url
+            );
+            exit;
+        }
 
         // get title
         if (strlen($html) > 0) {
             $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
             preg_match("/<title[^>]*>(.*?)<\/title>/ims", $html, $match); // ignore case
-            $title = $match[1];
+            $title = empty($match) ? 'Website not found.' : $match[1];
         } else {
             $title = 'Website not found.';
         }
@@ -38,12 +60,10 @@ class MetaData {
         $tags = empty($tags) ? array(
             'description' => ''
         ) : $tags;
-
         // import image library
         require_once('image.php');
         $object = new Image;
         $image  = $object->getImage($html);
-
         // return data
         return array(
             'url'         => $url,
@@ -52,6 +72,7 @@ class MetaData {
             'description' => empty($tags['description']) ? '' : $tags['description'],
             'image'       => !$image ? '' : $image
         );
+        exit;
     }
 
     /**

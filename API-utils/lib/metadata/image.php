@@ -24,10 +24,9 @@ class Image {
      * @return string $image Image URL.
      * @since 1.0.0
      */
-    function findImage($images, $index = 1) {
+    function findImage($images, $pattern, $index = 1) {
         $image = false;
         $isFound = false;
-        $pattern = "string(//img/@src)";
 
         foreach ($images as $item) {
             if ($isFound) break;
@@ -54,7 +53,7 @@ class Image {
         }
 
         if (!$image) {
-            return $this->findImage($images, ++$index);
+            return $this->findImage($images, $pattern, ++$index);
         }
         return $image;
     }
@@ -88,19 +87,19 @@ class Image {
 
         switch ($index) {
             case 1:
-                preg_match_all('/<meta property="og:image"[^>]+>/i', $html, $images);
+                preg_match_all('/<meta [^>]+="og:image"[^>]+>/i', $html, $images);
                 $image = empty($images[0][0]) ? false : $images[0][0];
                 $pattern = "string(//meta/@content)";
                 break;
 
             case 2:
-                preg_match_all('/<meta itemprop="image"[^>]+>/i', $html, $images);
+                preg_match_all('/<meta [^>]+="image"[^>]+>/i', $html, $images);
                 $image = empty($images[0][0]) ? false : $images[0][0];
                 $pattern = "string(//meta/@content)";
                 break;
 
             case 3:
-                preg_match_all('/<link rel="apple-touch-icon"[^>]+>/i', $html, $images);
+                preg_match_all('/<link [^>]+="apple-touch-icon"[^>]+>/i', $html, $images);
                 $image = empty($images[0][0]) ? false : $images[0][0];
                 $pattern = "string(//link/@href)";
                 break;
@@ -112,12 +111,23 @@ class Image {
                 if (empty($images[0][0])) {
                     $image = false;
                 } else {
-                    $image = $this->findImage($images[0]);
+                    $image = $this->findImage($images[0], $pattern);
                 }
                 break;
 
             case 5:
-                preg_match_all('/<link rel="shortcut icon"[^>]+>/i', $html, $images);
+                preg_match_all('/<img[^>]+>/i', $html, $images);
+                $pattern = "string(//img/@data-src)";
+
+                if (empty($images[0][0])) {
+                    $image = false;
+                } else {
+                    $image = $this->findImage($images[0], $pattern);
+                }
+                break;
+
+            case 6:
+                preg_match_all('/<link [^>]+="icon"[^>]+>/i', $html, $images);
                 $image = empty($images[0][0]) ? false : $images[0][0];
                 $pattern = "string(//link/@href)";
                 break;
@@ -131,6 +141,9 @@ class Image {
         }
 
         $src = $this->getImageUrl($image, $pattern);
+        if (!filter_var($src, FILTER_VALIDATE_URL)) {
+            return $this->getImage($html, ++$index, $pattern);
+        }
         return $src;
     }
 }
