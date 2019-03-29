@@ -3,6 +3,7 @@ import isUrl from 'is-url'
 import { isYoutubeVideo } from '../../../helpers/validation'
 import { getYoutubeID } from '../../../helpers/utils'
 import { hasTitle, hasMark, hasBlock } from '../core/validation'
+import { findNode, findDOMNode } from 'slate-react'
 
 /**
  * Define hotkey matchers.
@@ -192,13 +193,22 @@ export default {
                                 editor.moveToRangeOfNode(block).unwrapInline('link')
                                 editor.moveStartTo(block.key, text.length)
 
-                                // convert to link
-                                editor.setBlocks({
-                                    type: 'embed-link',
-                                    data: {
-                                        url: text
+                                // insert new paragraph
+                                editor.insertBlock('paragraph')
+
+                                fetch('http://localhost/fachririyanto/github/medium-text-editor/API-utils/?action=GET_WEBSITE_DATA&url=' + text)
+                                .then(response => { return response.json() })
+                                .then(json => {
+                                    const element = document.querySelector(
+                                        '*[data-key="' + block.key +'"]'
+                                    )
+                                    if (element) {
+                                        editor.setNodeByKey(block.key, {
+                                            type: 'embed-link',
+                                            data: json
+                                        })
                                     }
-                                }).insertBlock('paragraph')
+                                })
                                 return true
                             } else {
                                 // split block

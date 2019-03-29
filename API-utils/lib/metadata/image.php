@@ -67,7 +67,7 @@ class Image {
      */
     function getImageUrl($tag, $pattern) {
         $doc = new DOMDocument();
-        $doc->loadHTML($tag);
+        @$doc->loadHTML($tag);
         $xpath = new DOMXPath($doc);
         $src = $xpath->evaluate($pattern);
         return $src;
