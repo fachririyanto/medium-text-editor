@@ -470,6 +470,26 @@
                     height: auto;
                 }
             }
+            .content__link {
+                display: block;
+                position: absolute;
+                bottom: 16px;
+                right: 16px;
+                z-index: 16;
+                a {
+                    display: inline-block;
+                    padding: 6px 12px;
+                    max-width: 200px;
+                    font-size: 1.3rem;
+                    font-family: 'Open Sans', sans-serif;
+                    color: #fff;
+                    text-decoration: none;
+                    background: #333;
+                    white-space: nowrap;
+                    @include line-clamp(1);
+                    @include border-radius(6px);
+                }
+            }
             .content__ratio {
                 display: block;
             }

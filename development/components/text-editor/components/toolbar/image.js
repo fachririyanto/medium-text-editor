@@ -41,7 +41,9 @@ export default class Video extends Component {
             url: block.data.get('url'),
             width: block.data.get('width'),
             height: block.data.get('height'),
-            align: align
+            align: align,
+            hasLink: block.data.get('hasLink') ? block.data.get('hasLink') : false,
+            link: block.data.get('link') ? block.data.get('link') : ''
         }
 
         // update align
@@ -73,6 +75,32 @@ export default class Video extends Component {
     onConfirmLink(event) {
         if (event.which === 13) {
             event.preventDefault()
+
+            // define target
+            const target = event.target || window
+
+            // define input value
+            const input = target.value
+
+            // validate value
+            if (input && input !== '') {
+                let currentState = this.props.toolbar
+                currentState.state.showInputLink = false
+                this.props.setToolbar(currentState, () => {
+                    const { editor } = this.props
+                    const { value }  = editor
+                    const block      = value.anchorBlock
+                    const data       = {
+                        url: block.data.get('url'),
+                        width: block.data.get('width'),
+                        height: block.data.get('height'),
+                        align: block.data.get('align'),
+                        hasLink: true,
+                        link: input
+                    }
+                    editor.setNodeByKey(block.key, { data: data }).focus()
+                })
+            }
         }
     }
 
@@ -109,6 +137,7 @@ export default class Video extends Component {
                         className="link__textbox"
                         placeholder="Paste or type a link..."
                         autoFocus={ true }
+                        onKeyDown={ this.onConfirmLink.bind(this) }
                     />
                     <button className="button--hide-link link__close" onClick={ this.onCloseLink.bind(this) }>
                         <span className="U--table -full-height">

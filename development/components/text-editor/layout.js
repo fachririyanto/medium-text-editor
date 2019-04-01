@@ -307,13 +307,29 @@ export default class TextEditor extends Component {
             switch (value.anchorBlock.type) {
                 case 'image': {
                     if (this.toolbar.state.showInputLink) return next()
-                    let currentState = this.toolbar
-                    currentState.state.showInputLink = true
-                    this.setToolbar(currentState, () => {
-                        setTimeout(() => {
-                            document.getElementById('inline__textbox').focus()
-                        }, 0)
-                    })
+
+                    const block   = value.anchorBlock
+                    const hasLink = block.data.get('hasLink') ? block.data.get('hasLink') : false
+
+                    if (hasLink) {
+                        const data = {
+                            url: block.data.get('url'),
+                            width: block.data.get('width'),
+                            height: block.data.get('height'),
+                            align: block.data.get('align'),
+                            hasLink: false,
+                            link: ''
+                        }
+                        editor.setNodeByKey(block.key, { data: data }).focus()
+                    } else {
+                        let currentState = this.toolbar
+                        currentState.state.showInputLink = true
+                        this.setToolbar(currentState, () => {
+                            setTimeout(() => {
+                                document.getElementById('inline__textbox').focus()
+                            }, 0)
+                        })
+                    }
                     return true
                 }
             }

@@ -11,13 +11,18 @@ export function ImageWrapper(props) {
     )
 }
 
-const Image = (props) => {
+/**
+ * Image component. 
+ */
+export default function Image(props) {
     const { node, attributes, isFocused } = props
     const data = {
         url: node.data.get('url'),
         width: node.data.get('width'),
         height: node.data.get('height'),
-        align: node.data.get('align')
+        align: node.data.get('align'),
+        hasLink: node.data.get('hasLink') ? node.data.get('hasLink') : false,
+        link: node.data.get('link') ? node.data.get('link') : ''
     }
     const ratio = (parseInt(data.height, 10) / parseInt(data.width, 10) * 100)
 
@@ -35,6 +40,11 @@ const Image = (props) => {
                             <span className="content__container U--overlay-layout">
                                 <img src={ data.url } alt={ data.url } draggable={ false } />
                             </span>
+                            { data.hasLink ? (
+                                <span className="content__link">
+                                    <a target="_blank" href={ data.link }>{ data.link }</a>
+                                </span>
+                            ) : null }
                             <span className="content__ratio" style={{ paddingTop: `${ratio}%` }}></span>
                         </div>
                     </div>
@@ -44,4 +54,3 @@ const Image = (props) => {
         </figure>
     )
 }
-export default Image
