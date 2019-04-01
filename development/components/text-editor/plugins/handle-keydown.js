@@ -2,8 +2,7 @@ import { isKeyHotkey } from 'is-hotkey'
 import isUrl from 'is-url'
 import { isYoutubeVideo } from '../../../helpers/validation'
 import { getYoutubeID } from '../../../helpers/utils'
-import { hasTitle, hasMark, hasBlock } from '../core/validation'
-import { findNode, findDOMNode } from 'slate-react'
+import { hasTitle, hasMark, hasBlock, hasInline } from '../core/validation'
 
 /**
  * Define hotkey matchers.
@@ -189,10 +188,6 @@ export default {
                                 // define block
                                 const block = value.anchorBlock
 
-                                // remove link
-                                editor.moveToRangeOfNode(block).unwrapInline('link')
-                                editor.moveStartTo(block.key, text.length)
-
                                 // insert new paragraph
                                 editor.insertBlock('paragraph')
 
@@ -203,10 +198,24 @@ export default {
                                         '*[data-key="' + block.key +'"]'
                                     )
                                     if (element) {
-                                        editor.setNodeByKey(block.key, {
-                                            type: 'embed-link',
-                                            data: json
-                                        })
+                                        // remove link
+                                        editor.moveToRangeOfNode(block).unwrapInline('link')
+                                        editor.moveStartTo(block.key, text.length)
+
+                                        if (json.isImage) {
+                                            editor
+                                                .setNodeByKey(block.key, {
+                                                    type: 'image',
+                                                    data: json.imagemeta
+                                                })
+                                                .wrapBlock('image-wrapper')
+                                                .insertBlock('caption')
+                                        } else {
+                                            editor.setNodeByKey(block.key, {
+                                                type: 'embed-link',
+                                                data: json
+                                            })
+                                        }
                                     }
                                 })
                                 return true
@@ -240,11 +249,30 @@ export default {
                 // define block type
                 switch (value.anchorBlock.type) {
                     case 'caption': {
-                        if (value.selection.start.offset === 0 && value.selection.end.offset === 0) {
+                        if (value.anchorBlock.text === '') {
                             event.preventDefault()
                             return false
+                        } else {
+                            if (value.selection.isExpanded) {
+                                if (value.endBlock.type !== 'caption') {
+                                    editor.moveToRangeOfNode(value.anchorBlock).insertText('')
+                                    return true
+                                }
+                                return next()
+                            }
+
+                            if (value.selection.start.offset === 0 && value.previousText.text === '') {
+                                editor.moveFocusBackward(1)
+                                if (editor.value.focusBlock.type === 'caption') {
+                                    editor.unwrapInline('link').insertText('')
+                                    return next()
+                                }
+                                editor.moveFocusForward(1)
+                                event.preventDefault()
+                                return false
+                            }
                         }
-                        break
+                        return next()
                     }
                     case 'image': {
                         // get caption block

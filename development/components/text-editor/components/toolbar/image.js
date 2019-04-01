@@ -55,6 +55,28 @@ export default class Video extends Component {
     }
 
     /**
+     * On close link.
+     */
+    onCloseLink(event) {
+        event.preventDefault()
+        let currentState = this.props.toolbar
+        currentState.state.showInputLink = false
+        this.props.setToolbar(currentState, () => {
+            const { editor } = this.props
+            editor.focus()
+        })
+    }
+
+    /**
+     * On confirm link. 
+     */
+    onConfirmLink(event) {
+        if (event.which === 13) {
+            event.preventDefault()
+        }
+    }
+
+    /**
      * Render button.
      * @return {Element}
      */
@@ -74,10 +96,38 @@ export default class Video extends Component {
     }
 
     /**
+     * Render input link.
+     * @return {Element}
+     */
+    InputLink() {
+        return (
+            <div className="inline__input-link U--overlay-layout">
+                <div className="link__component">
+                    <input
+                        id="inline__textbox"
+                        type="text"
+                        className="link__textbox"
+                        placeholder="Paste or type a link..."
+                        autoFocus={ true }
+                    />
+                    <button className="button--hide-link link__close" onClick={ this.onCloseLink.bind(this) }>
+                        <span className="U--table -full-height">
+                            <span className="table__cell -vertical-align--middle">
+                                <i className="material-icons">close</i>
+                            </span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
+    /**
      * Render element.
      * @return {Element}
      */
     render() {
+        const isInputOpen = this.props.toolbar.state.showInputLink
         return (
             <div className="toolbar--inline" onClick={ this.handleClick.bind(this) }>
                 <div className="inline__content">
@@ -85,6 +135,7 @@ export default class Video extends Component {
                     { this.Button('left', 'format_indent_decrease') }
                     { this.Button('carousel', 'view_carousel') }
                     { this.Button('fullscreen', '4k') }
+                    { isInputOpen ? this.InputLink() : null }
                 </div>
             </div>
         )

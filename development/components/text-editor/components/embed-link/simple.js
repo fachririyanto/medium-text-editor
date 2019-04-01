@@ -51,6 +51,25 @@ export default class EmbedLink extends Component {
     }
 
     /**
+     * Render image.
+     * @return {Element}
+     */
+    Image() {
+        const { node } = this.props
+        const data = {
+            title: node.data.get('title'),
+            image: node.data.get('image'),
+            description: node.data.get('description'),
+            domain: node.data.get('domain')
+        }
+        return (
+            <span className="link__image">
+                <img src={ data.image } alt={ data.image } />
+            </span>
+        )
+    }
+
+    /**
      * Render element.
      * @return {Element}
      */

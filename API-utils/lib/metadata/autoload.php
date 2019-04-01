@@ -27,21 +27,31 @@ class MetaData {
             return array(
                 'url'         => $url,
                 'domain'      => parse_url($url),
-                'title'       => 'Website not found.',
-                'description' => 'Error page 404 website not found.',
-                'image'       => ''
+                'title'       => 'Something Error',
+                'description' => 'Website is not found.',
+                'image'       => '',
+                'isImage'     => false
             );
             exit;
         }
 
         // validate if is image url
-        if (getimagesize($url)) {
+        $imagemeta = getimagesize($url);
+        if ($imagemeta) {
             return array(
                 'url'         => $url,
                 'domain'      => parse_url($url),
-                'title'       => 'Image Source.',
+                'title'       => 'Image Source',
                 'description' => 'This is an image source.',
-                'image'       => $url
+                'image'       => $url,
+                'isImage'     => true,
+                'imagemeta'   => array(
+                    'width'  => $imagemeta[0],
+                    'height' => $imagemeta[1],
+                    'size'   => 0,
+                    'url'    => $url,
+                    'align'  => 'default'
+                )
             );
             exit;
         }
@@ -50,9 +60,9 @@ class MetaData {
         if (strlen($html) > 0) {
             $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
             preg_match("/<title[^>]*>(.*?)<\/title>/ims", $html, $match); // ignore case
-            $title = empty($match) ? 'Website not found.' : $match[1];
+            $title = empty($match) ? 'No Title' : $match[1];
         } else {
-            $title = 'Website not found.';
+            $title = 'No Title';
         }
 
         // get tags
@@ -70,7 +80,8 @@ class MetaData {
             'domain'      => parse_url($url),
             'title'       => $title,
             'description' => empty($tags['description']) ? '' : $tags['description'],
-            'image'       => !$image ? '' : $image
+            'image'       => !$image ? '' : $image,
+            'isImage'     => false
         );
         exit;
     }

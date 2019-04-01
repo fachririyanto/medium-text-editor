@@ -30,7 +30,7 @@ import {
  * Import core editor.
  */
 import { initToolbar } from './core/editor'
-import { isPlaceholderState } from './core/validation'
+import { isPlaceholderState, hasInline } from './core/validation'
 
 /**
  * Import components.
@@ -205,7 +205,9 @@ export default class TextEditor extends Component {
                     name: 'edit-image',
                     blockKey: value.anchorBlock.key,
                     blockType: value.anchorBlock.type,
-                    state: {}
+                    state: {
+                        showInputLink: this.toolbar.state.showInputLink ? this.toolbar.state.showInputLink : false
+                    }
                 }
                 this.props.onChange({ value }, () => {
                     initToolbar(this, value)
@@ -302,6 +304,20 @@ export default class TextEditor extends Component {
             // validate block
             if (!value.anchorBlock) return next()
 
+            switch (value.anchorBlock.type) {
+                case 'image': {
+                    if (this.toolbar.state.showInputLink) return next()
+                    let currentState = this.toolbar
+                    currentState.state.showInputLink = true
+                    this.setToolbar(currentState, () => {
+                        setTimeout(() => {
+                            document.getElementById('inline__textbox').focus()
+                        }, 0)
+                    })
+                    return true
+                }
+            }
+
             // validate block type
             const allowed = ['paragraph', 'caption', 'list-item']
             if (allowed.indexOf(value.anchorBlock.type) === -1) return next()
@@ -309,13 +325,19 @@ export default class TextEditor extends Component {
             // if toolbar is open
             if (selection.isExpanded && this.toolbar.name === 'add-inline') {
                 if (this.toolbar.state.showInputLink) return next()
-                let currentState = this.toolbar
-                currentState.state.showInputLink = true
-                this.setToolbar(currentState, () => {
-                    setTimeout(() => {
-                        document.getElementById('inline__textbox').focus()
-                    }, 0)
-                })
+                const isActive   = hasInline(value, 'link')
+
+                if (isActive) {
+                    editor.unwrapInline('link').focus()
+                } else {
+                    let currentState = this.toolbar
+                    currentState.state.showInputLink = true
+                    this.setToolbar(currentState, () => {
+                        setTimeout(() => {
+                            document.getElementById('inline__textbox').focus()
+                        }, 0)
+                    })
+                }
                 return true
             }
         }
