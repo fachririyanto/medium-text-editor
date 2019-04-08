@@ -152,10 +152,25 @@ export default class Video extends Component {
     }
 
     /**
-     * Render element.
-     * @return {Element}
+     * Render for small image.
      */
-    render() {
+    Small() {
+        const isInputOpen = this.props.toolbar.state.showInputLink
+        return (
+            <div className="toolbar--inline" onClick={ this.handleClick.bind(this) }>
+                <div className="inline__content">
+                    { this.Button('default', 'view_day') }
+                    { this.Button('left', 'format_indent_decrease') }
+                    { isInputOpen ? this.InputLink() : null }
+                </div>
+            </div>
+        )
+    }
+
+    /**
+     * Render for big image.
+     */
+    Big() {
         const isInputOpen = this.props.toolbar.state.showInputLink
         return (
             <div className="toolbar--inline" onClick={ this.handleClick.bind(this) }>
@@ -168,5 +183,17 @@ export default class Video extends Component {
                 </div>
             </div>
         )
+    }
+
+    /**
+     * Render element.
+     * @return {Element}
+     */
+    render() {
+        const { editor } = this.props
+        const { value }  = editor
+        const block      = value.anchorBlock
+        const width      = block.data.get('width')
+        return width <= 680 ? this.Small() : this.Big()
     }
 }

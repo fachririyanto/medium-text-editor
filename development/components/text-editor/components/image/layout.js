@@ -12,7 +12,7 @@ export function ImageWrapper(props) {
 }
 
 /**
- * Image component. 
+ * Image component.
  */
 export default function Image(props) {
     const { node, attributes, isFocused } = props
@@ -26,16 +26,17 @@ export default function Image(props) {
     }
     const ratio = (parseInt(data.height, 10) / parseInt(data.width, 10) * 100)
 
-    let focusedHeight = 'auto';
+    // setup focus height
+    let focusedHeight = 'auto'
     if (data.align === 'left') {
-        let widthRatio = parseInt(data.width, 10) / 400;
-        focusedHeight = parseInt(data.height, 10) / widthRatio + 8;
+        let widthRatio = parseInt(data.width, 10) / 400
+        focusedHeight = parseInt(data.height, 10) / widthRatio + 8
     }
     return (
         <figure className={ "block--default block--image" + (isFocused ? ' -is-selected' : '') } draggable={ false }>
             <div className={ "block--container -" + data.align } { ...attributes }>
                 <div className="block__transform">
-                    <div className="image__content">
+                    <div className="image__content" style={{ width: data.width }}>
                         <div className="content__box">
                             <span className="content__container U--overlay-layout">
                                 <img src={ data.url } alt={ data.url } draggable={ false } />
@@ -47,8 +48,8 @@ export default function Image(props) {
                             ) : null }
                             <span className="content__ratio" style={{ paddingTop: `${ratio}%` }}></span>
                         </div>
+                        <span className="image__focused U--overlay-layout" style={{ height: focusedHeight }}></span>
                     </div>
-                    <span className="image__focused U--overlay-layout" style={{ height: focusedHeight }}></span>
                 </div>
             </div>
         </figure>
