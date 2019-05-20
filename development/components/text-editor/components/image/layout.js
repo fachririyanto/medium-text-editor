@@ -27,16 +27,33 @@ export default function Image(props) {
     const ratio = (parseInt(data.height, 10) / parseInt(data.width, 10) * 100)
 
     // setup focus height
+    let isLeftAlign = false
     let focusedHeight = 'auto'
+    let focusedWidth = 'auto'
+    let mainWidth = data.width
+    let marginLeft = 'auto'
     if (data.align === 'left') {
-        let widthRatio = parseInt(data.width, 10) / 400
-        focusedHeight = parseInt(data.height, 10) / widthRatio + 8
+        isLeftAlign = true
+
+        // if image with less than 400
+        if (data.width <= 400) {
+            let widthRatio = parseInt(data.width, 10) / data.width
+            focusedHeight = parseInt(data.height, 10) / widthRatio + 8
+            mainWidth = data.width
+            marginLeft = 140 - (400 - mainWidth)
+        } else {
+            let widthRatio = parseInt(data.width, 10) / 400
+            focusedHeight = parseInt(data.height, 10) / widthRatio + 8
+            mainWidth = 400
+            marginLeft = 140
+        }
+        focusedWidth = mainWidth + 8
     }
     return (
         <figure className={ "block--default block--image" + (isFocused ? ' -is-selected' : '') } draggable={ false }>
             <div className={ "block--container -" + data.align } { ...attributes }>
                 <div className="block__transform">
-                    <div className="image__content" style={{ width: data.width }}>
+                    <div className="image__content" style={{ marginLeft: -marginLeft, width: data.width }}>
                         <div className="content__box">
                             <span className="content__container U--overlay-layout">
                                 <img src={ data.url } alt={ data.url } draggable={ false } />
@@ -48,7 +65,7 @@ export default function Image(props) {
                             ) : null }
                             <span className="content__ratio" style={{ paddingTop: `${ratio}%` }}></span>
                         </div>
-                        <span className="image__focused U--overlay-layout" style={{ height: focusedHeight }}></span>
+                        <span className="image__focused U--overlay-layout" style={{ width: focusedWidth, height: focusedHeight }}></span>
                     </div>
                 </div>
             </div>

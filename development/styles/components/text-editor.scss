@@ -408,10 +408,8 @@
                     z-index: 3;
                 }
                 .image__content {
-                    margin-left: -140px;
                     margin-right: 32px;
                     margin-bottom: 16px;
-                    width: 400px !important;
                     float: left;
                     .content__container {
                         z-index: 15;
@@ -419,7 +417,6 @@
                 }
                 .image__focused {
                     bottom: auto;
-                    width: 408px;
                     height: auto;
                 }
             }
