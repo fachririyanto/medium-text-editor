@@ -35,12 +35,16 @@ export default function Image(props) {
     if (data.align === 'left') {
         isLeftAlign = true
 
-        // if image with less than 400
-        if (data.width <= 400) {
+        // validate image
+        if (data.width <= 200) {
+            focusedHeight = parseInt(data.height, 10) / data.width
+            mainWidth = data.width
+            marginLeft = 0
+        } else if (data.width <= 400) {
             let widthRatio = parseInt(data.width, 10) / data.width
             focusedHeight = parseInt(data.height, 10) / widthRatio + 8
             mainWidth = data.width
-            marginLeft = 140 - (400 - mainWidth)
+            marginLeft = (parseInt(mainWidth) - 200) / 2
         } else {
             let widthRatio = parseInt(data.width, 10) / 400
             focusedHeight = parseInt(data.height, 10) / widthRatio + 8
@@ -53,7 +57,7 @@ export default function Image(props) {
         <figure className={ "block--default block--image" + (isFocused ? ' -is-selected' : '') } draggable={ false }>
             <div className={ "block--container -" + data.align } { ...attributes }>
                 <div className="block__transform">
-                    <div className="image__content" style={{ marginLeft: -marginLeft, width: data.width }}>
+                    <div className="image__content" style={{ marginLeft: isLeftAlign ? -marginLeft : marginLeft, width: mainWidth }}>
                         <div className="content__box">
                             <span className="content__container U--overlay-layout">
                                 <img src={ data.url } alt={ data.url } draggable={ false } />
