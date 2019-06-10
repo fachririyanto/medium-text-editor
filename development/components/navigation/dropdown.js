@@ -232,7 +232,7 @@ export default class Dropdown extends Component {
                     </button>
                 </li>
                 <li className="dropdown__item">
-                    <button className="dropdown__button" onClick={ event => this.props.changeLayout(event, 'share-draft-link') }>
+                    <button className="dropdown__button" onClick={ event => this.props.changeLayout(event, 'delete-story', () => alert('Opps, You can\'t delete this story.')) }>
                         Delete story
                     </button>
                 </li>
@@ -254,7 +254,7 @@ export default class Dropdown extends Component {
                 </li>
                 <li className="dropdown__divider"></li>
                 <li className="dropdown__item">
-                    <button className="dropdown__button" onClick={ event => this.props.changeLayout(event, 'share-draft-link') }>
+                    <button className="dropdown__button" onClick={ event => this.props.toggleKeyboardShortcut(event, true) }>
                         Keyboard shortcut
                     </button>
                 </li>

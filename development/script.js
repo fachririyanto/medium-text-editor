@@ -9,6 +9,7 @@ import { isMobile } from './helpers/validation'
 import Navigation from './components/navigation/layout'
 import Editor from './components/text-editor/layout'
 import MobileEditor from './components/text-editor-mobile/layout'
+import KeyboardHelpers from './components/keyboard-helpers/layout'
 
 /* import styles */
 import './styles/style.scss'
@@ -64,7 +65,10 @@ class App extends Component {
 
             // define option state
             isOpenOption: false,
-            optionLayout: 'default'
+            optionLayout: 'default',
+
+            // keyboard shortcuts state
+            keyboard: false
         }
 
         // button more object
@@ -103,6 +107,18 @@ class App extends Component {
         this.setState({
             isOpenOption: !this.state.isOpenOption,
             optionLayout: 'default'
+        })
+    }
+
+    /**
+     * Toggle keyboard shortcuts.
+     */
+    toggleKeyboardShortcut(event, state) {
+        event.preventDefault()
+        this.setState({
+            isOpenOption: false,
+            optionLayout: 'default',
+            keyboard: state
         })
     }
 
@@ -161,6 +177,7 @@ class App extends Component {
                     changePost={ this.changePost.bind(this) }
                     changeLayout={ this.changeLayout.bind(this) }
                     toggleOption={ this.toggleOption.bind(this) }
+                    toggleKeyboardShortcut={ this.toggleKeyboardShortcut.bind(this) }
                     savePost={ this.savePost.bind(this) }
                 />
                 { isMobile() ? (
@@ -178,6 +195,7 @@ class App extends Component {
                         />
                     </div>
                 )}
+                { this.state.keyboard ? <KeyboardHelpers toggleKeyboardShortcut={ this.toggleKeyboardShortcut.bind(this) } /> : null }
             </section>
         )
     }
