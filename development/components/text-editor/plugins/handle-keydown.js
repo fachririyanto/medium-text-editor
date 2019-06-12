@@ -191,7 +191,7 @@ export default {
                                 // insert new paragraph
                                 editor.insertBlock('paragraph')
 
-                                fetch('http://localhost/fachririyanto/github/medium-text-editor/API-utils/?action=GET_WEBSITE_DATA&url=' + text)
+                                fetch('https://fachririyanto.com/experiments/medium-text-editor/API-utils/?action=GET_WEBSITE_DATA&url=' + text)
                                 .then(response => { return response.json() })
                                 .then(json => {
                                     const element = document.querySelector(
